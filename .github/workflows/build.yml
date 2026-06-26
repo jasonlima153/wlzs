@@ -1,0 +1,87 @@
+name: 构建去广告APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出仓库代码
+        uses: actions/checkout@v4
+
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 安装系统依赖
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq wget unzip xmlstarlet
+
+      - name: 检查APK文件是否存在
+        run: |
+          if [ -f "apk/netdebugger.apk" ]; then
+            echo "APK 文件存在，大小: $(du -h apk/netdebugger.apk | cut -f1)"
+            file apk/netdebugger.apk
+          else
+            echo "错误: apk/netdebugger.apk 不存在！"
+            echo "请将原始APK文件重命名为 netdebugger.apk 并放入 apk/ 目录"
+            exit 1
+          fi
+
+      - name: 执行去广告构建脚本
+        run: |
+          chmod +x scripts/remove_ads.sh
+          bash scripts/remove_ads.sh
+
+      - name: 上构建产物到 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v2.2.86-ad-free"
+          name: "网络调试精灵 v2.2.86 去广告版"
+          body: |
+            ## 去广告版构建
+            
+            基于原版 v2.2.86.050922 构建
+            
+            ### 已移除的广告SDK
+            - TopOn (Anythink) 聚合广告
+            - 穿山甲 (ByteDance Pangle) 广告
+            - 百度广告 (Baidu Mobads)
+            - 腾讯优量汇 (GDT)
+            - 快手广告 (Kwai/KSAd)
+            - 华为广告 (HiAd)
+            - vivo 广告
+            - OPPO 广告 (OPOS)
+            - 贝子广告 (BeiZi)
+            - SmartDigiMKT
+            
+            ### 使用方法
+            1. 卸载原版网络调试精灵
+            2. 下载此 APK 安装即可
+            
+            ### 注意事项
+            - 此为修改版APK，签名与原版不同
+            - 去广告后部分激励视频功能将不可用（但也不需要看广告了）
+          files: |
+            output/netdebugger-ad-free-signed.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 上传 APK 到 Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: netdebugger-ad-free
+          path: output/netdebugger-ad-free-signed.apk
+          retention-days: 30
