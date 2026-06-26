@@ -39,6 +39,16 @@ jobs:
       - name: 赋予 gradlew 执行权限
         run: chmod +x gradlew
 
+      - name: 生成 Gradle Wrapper
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            GRADLE_VER=$(grep distributionUrl gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
+            wget -q "https://services.gradle.org/distributions/gradle-${GRADLE_VER}-bin.zip" -O /tmp/gradle.zip
+            unzip -qo /tmp/gradle.zip -d /tmp/gradle
+            /tmp/gradle/gradle-${GRADLE_VER}/bin/gradle wrapper --gradle-version ${GRADLE_VER}
+            rm -rf /tmp/gradle /tmp/gradle.zip
+          fi
+
       - name: 构建 Release APK
         run: ./gradlew assembleRelease --no-daemon
 
