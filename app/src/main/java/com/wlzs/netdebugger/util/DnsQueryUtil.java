@@ -104,7 +104,7 @@ public class DnsQueryUtil {
         buffer.putShort((short) type); // Type
         buffer.putShort((short) 1);    // Class: IN
 
-        byte[] result = new byte(buffer.position());
+        byte[] result = new byte[(int) buffer.position()];
         buffer.flip();
         buffer.get(result);
         return result;
