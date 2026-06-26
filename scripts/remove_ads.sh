@@ -233,12 +233,15 @@ for comp in components:
             # 如果已有 enabled="false" 则跳过
             if 'android:enabled="false"' in full or "android:enabled='false'" in full:
                 return full
+            # 先移除已有的 enabled 属性 (避免 duplicate attribute 错误)
+            cleaned_pre = re.sub(r'\s*android:enabled="[^"]*"', '', pre_name)
+            cleaned_post = re.sub(r'\s*android:enabled="[^"]*"', '', post_name)
             # 在关闭 > 之前添加 android:enabled="false"
             if '/>' in ending:
                 new_ending = ' android:enabled="false"/>'
             else:
                 new_ending = ' android:enabled="false">'
-            return '<' + comp + pre_name + 'android:name="' + name + '"' + post_name + new_ending
+            return '<' + comp + cleaned_pre + 'android:name="' + name + '"' + cleaned_post + new_ending
         return full
     
     content = re.sub(pattern, replace_component, content)
