@@ -164,17 +164,7 @@ AD_COMPONENT_PREFIXES=(
   "com.oplus.tblplayer"
 )
 
-# 对所有组件类型禁用 (activity, service, receiver, provider)
-for component in activity service receiver provider; do
-  for prefix in "${AD_COMPONENT_PREFIXES[@]}"; do
-    # 如果该组件没有 enabled="false"，就添加它
-    # 先尝试在已有属性后追加
-    sed -i "s|<${component} \([^>]*\)name=\"${prefix}[^\" ]*\"\([^>]*\)>|<${component} \1name=\"${prefix}ifymatch\2 android:enabled=\"false\">|g" "$MANIFEST" 2>/dev/null || true
-  done
-done
-
-# 更可靠的方式: 使用 python3 处理 XML
-echo "  使用 Python3 精确处理 AndroidManifest.xml..."
+# 使用 Python3 精确处理 AndroidManifest.xml (安全可靠)
 python3 - "$MANIFEST" << 'PYEOF'
 import re, sys
 
