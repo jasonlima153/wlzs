@@ -49,6 +49,18 @@ jobs:
             rm -rf /tmp/gradle /tmp/gradle.zip
           fi
 
+      - name: 生成签名密钥
+        run: |
+          keytool -genkeypair -v \
+            -keystore app/release.jks \
+            -alias release \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass netdebug123 \
+            -keypass netdebug123 \
+            -dname "CN=WLZS, OU=Dev, O=WLZS, L=CN, ST=CN, C=CN"
+
       - name: 构建 Release APK
         run: ./gradlew assembleRelease --no-daemon
 
