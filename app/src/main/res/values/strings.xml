@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">网络调试工具</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">首页</string>
+    <string name="nav_tools">工具箱</string>
+    <string name="nav_comm">通信</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- Home -->
+    <string name="home_network_info">网络信息</string>
+    <string name="home_wifi_info">WiFi 信息</string>
+    <string name="home_mobile_info">移动网络信息</string>
+    <string name="home_ip_location">IP 归属地</string>
+    <string name="home_lan_scan">局域网扫描</string>
+
+    <!-- Network info labels -->
+    <string name="info_ip_address">IP 地址</string>
+    <string name="info_gateway">网关</string>
+    <string name="info_dns">DNS</string>
+    <string name="info_mac">MAC 地址</string>
+    <string name="info_ssid">SSID</string>
+    <string name="info_bssid">BSSID</string>
+    <string name="info_signal">信号强度</string>
+    <string name="info_frequency">频率</string>
+    <string name="info_network_type">网络类型</string>
+    <string name="info_subnet_mask">子网掩码</string>
+    <string name="info_not_connected">未连接</string>
+
+    <!-- Tools -->
+    <string name="tool_ping">Ping</string>
+    <string name="tool_dns">DNS 查询</string>
+    <string name="tool_port_scan">端口扫描</string>
+    <string name="tool_traceroute">Traceroute</string>
+
+    <!-- Communication -->
+    <string name="comm_tcp_client">TCP 客户端</string>
+    <string name="comm_tcp_server">TCP 服务端</string>
+    <string name="comm_udp_client">UDP 客户端</string>
+    <string name="comm_udp_server">UDP 服务端</string>
+    <string name="comm_http">HTTP 抓包</string>
+
+    <!-- Common -->
+    <string name="btn_start">开始</string>
+    <string name="btn_stop">停止</string>
+    <string name="btn_clear">清空</string>
+    <string name="btn_connect">连接</string>
+    <string name="btn_disconnect">断开</string>
+    <string name="btn_send">发送</string>
+    <string name="btn_scan">扫描</string>
+    <string name="btn_query">查询</string>
+    <string name="btn_listen">监听</string>
+
+    <string name="hint_host">请输入主机地址</string>
+    <string name="hint_port">请输入端口号</string>
+    <string name="hint_message">请输入要发送的内容</string>
+    <string name="hint_dns_server">DNS 服务器(默认: 8.8.8.8)</string>
+    <string name="hint_domain">请输入域名</string>
+    <string name="hint_start_port">起始端口</string>
+    <string name="hint_end_port">结束端口</string>
+    <string name="hint_url">请输入 URL</string>
+
+    <!-- Ping -->
+    <string name="ping_count">次数</string>
+    <string name="ping_continuous">连续 Ping</string>
+    <string name="ping_packets_sent">已发送</string>
+    <string name="ping_packets_received">已接收</string>
+    <string name="ping_packet_loss">丢包率</string>
+    <string name="ping_avg_delay">平均延迟</string>
+
+    <!-- DNS -->
+    <string name="dns_record_type">记录类型</string>
+    <string name="dns_result">查询结果</string>
+
+    <!-- Port scan -->
+    <string name="port_scan_progress">扫描进度</string>
+    <string name="port_open_ports">开放端口</string>
+    <string name="port_scan_status">扫描状态</string>
+
+    <!-- Traceroute -->
+    <string name="traceroute_hop">跳数</string>
+    <string name="traceroute_address">地址</string>
+    <string name="traceroute_latency">延迟</string>
+
+    <!-- TCP/UDP -->
+    <string name="tcp_connected">已连接到 %s:%d</string>
+    <string name="tcp_disconnected">已断开连接</string>
+    <string name="tcp_connect_failed">连接失败</string>
+    <string name="tcp_listening">正在监听端口 %d…</string>
+    <string name="tcp_client_connected">客户端已连接: %s</string>
+    <string name="udp_sending">发送到 %s:%d</string>
+    <string name="udp_received">收到来自 %s:%d</string>
+    <string name="udp_bind_port">绑定端口</string>
+
+    <!-- HTTP -->
+    <string name="http_method">请求方法</string>
+    <string name="http_headers">请求头</string>
+    <string name="http_request_body">请求体</string>
+    <string name="http_response">响应</string>
+    <string name="http_response_code">状态码</string>
+    <string name="http_response_headers">响应头</string>
+    <string name="http_response_body">响应体</string>
+
+    <!-- LAN scan -->
+    <string name="lan_scanning">正在扫描局域网…</string>
+    <string name="lan_devices_found">发现 %d 台设备</string>
+    <string name="lan_device_name">设备名</string>
+
+    <!-- IP Location -->
+    <string name="ip_location_query">查询 IP 归属地</string>
+    <string name="ip_location_result">归属地</string>
+
+    <!-- Settings -->
+    <string name="settings_dark_mode">深色主题</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">版本</string>
+    <string name="settings_about_summary">网络调试工具 v%1$s\n无广告 · 无追踪 · 开源</string>
+
+    <!-- Status -->
+    <string name="status_running">运行中…</string>
+    <string name="status_stopped">已停止</string>
+    <string name="status_idle">就绪</string>
+    <string name="status_error">错误</string>
+</resources>

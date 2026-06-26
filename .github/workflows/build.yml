@@ -1,0 +1,80 @@
+name: 构建 APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 安装 Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Gradle 缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
+      - name: 赋予 gradlew 执行权限
+        run: chmod +x gradlew
+
+      - name: 构建 Release APK
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: 上传到 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v1.0.0"
+          name: "网络调试工具 v1.0.0 (纯净无广告)"
+          body: |
+            ## 纯净版网络调试工具
+            
+            从零开发的网络调试工具，功能对标网络调试精灵，完全无广告。
+            
+            ### 功能
+            - 网络信息查看 (WiFi/IP/DNS/MAC)
+            - Ping 工具
+            - DNS 查询
+            - 端口扫描
+            - Traceroute 路由追踪
+            - TCP/UDP 客户端/服务端调试
+            - HTTP 抓包
+            - 局域网设备扫描
+            - IP 归属地查询
+            - 深色主题
+            
+            ### 特点
+            - 零广告、零SDK、零追踪
+            - 完全开源
+            - Material Design 风格
+          files: app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 上传 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: netdebugger-clean
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 30
