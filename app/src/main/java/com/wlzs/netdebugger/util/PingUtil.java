@@ -50,7 +50,8 @@ public class PingUtil {
                     line = reader.readLine();
                     if (line == null) break;
 
-                    handler.post(() -> listener.onLine(line));
+                    final String currentLine = line;
+                    handler.post(() -> listener.onLine(currentLine));
 
                     // Parse ping output
                     if (line.contains("bytes from")) {
@@ -75,7 +76,8 @@ public class PingUtil {
                 // Wait for process to finish
                 String errLine;
                 while ((errLine = errorReader.readLine()) != null) {
-                    handler.post(() -> listener.onError(errLine));
+                    final String currentErrLine = errLine;
+                    handler.post(() -> listener.onError(currentErrLine));
                 }
 
                 // Generate stats
