@@ -276,108 +276,147 @@ PYEOF
 
 echo "  广告组件禁用完成"
 
-# 6. 修改 Smali 代码 - 禁用广告 SDK 初始化和加载
-echo "[6/7] 修改 Smali 代码禁用广告 SDK..."
+# 6. 修改 Smali 代码 - 禁用广告 SDK 核心初始化入口
+echo "[6/7] 修改 Smali 代码禁用广告 SDK (仅入口文件)..."
 
 python3 - "$DECODED_DIR" << 'PYEOF'
 import os, re, glob, sys
 
 decoded_dir = sys.argv[1]
-smali_dirs = glob.glob(os.path.join(decoded_dir, "smali*"))
+smali_dirs = sorted(glob.glob(os.path.join(decoded_dir, "smali*")))
 total_modified = 0
 
-# 广告 SDK 目录特征词
-ad_sdk_patterns = [
-    "anythink",
-    "openadsdk",
-    "mobads",
-    "com/qq/e",
-    "kwad",
-    "openalliance",
-    "mobilead",
-    "opos/mobad",
-    "beizi",
-    "byazt",
-    "smartdigimkt",
+# 策略: 只修改广告聚合平台和各SDK的核心初始化入口
+# 不广撒网修改所有init方法，避免破坏非广告功能
+target_files = {
+    # TopOn Anythink 聚合平台入口
+    "ATMediationManager": ["initSDK", "init"],
+    "ATSDK": ["init", "initSDK"],
+    "ATAdManager": ["init"],
+    # 穿山甲
+    "TTAdSdk": ["init"],
+    "TTAdManager": ["init"],
+    "PangleAdSdk": ["init"],
+    # 百度广告
+    "MobadsSDKSetup": ["init"],
+    "BaiduMobads": ["initSDK"],
+    # 腾讯优量汇
+    "GDTAD": ["init"],
+    "GDTSDK": ["init"],
+    # 快手广告
+    "KSAdSDK": ["init", "initSDK"],
+    "KwadSDK": ["init"],
+    # 华为广告
+    "HiAd": ["init"],
+    "PPSAdSdk": ["init"],
+    # vivo广告
+    "VivoAdSdk": ["init"],
+    # OPPO广告
+    "OppoAdSdk": ["init"],
+    # 贝子广告
+    "BeiZiAd": ["init"],
+    # SmartDigiMKT
+    "SDMAdManager": ["init"],
+}
+
+# 在 smali 中搜索这些类文件并修改
+for smali_dir in smali_dirs:
+    for class_name, init_methods in target_files.items():
+        # 搜索这个类文件
+        found_files = []
+        for root, dirs, files in os.walk(smali_dir):
+            for fname in files:
+                if fname == f"{class_name}.smali":
+                    found_files.append(os.path.join(root, fname))
+        
+        for fpath in found_files:
+            try:
+                with open(fpath, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            except:
+                continue
+            
+            original = content
+            lines = content.split('\n')
+            new_lines = []
+            
+            for line in lines:
+                stripped = line.strip()
+                new_lines.append(line)
+                
+                # 检查是否匹配目标方法
+                for method_name in init_methods:
+                    if re.match(rf'\.method\s+(?:public|private|protected|static)\s+.*\b{method_name}\b', stripped):
+                        # 在方法签名后，第一行 .locals 或 .param 后插入 return-void
+                        pass  # 后续通过行号处理
+                        break
+            
+            # 更可靠的方式: 逐行处理
+            lines = content.split('\n')
+            new_lines = []
+            i = 0
+            while i < len(lines):
+                stripped = lines[i].strip()
+                
+                # 检测目标方法定义
+                matched_method = False
+                for method_name in init_methods:
+                    if re.match(rf'\.method\s+(?:public|private|protected|static)\s+.*\b{method_name}\b', stripped):
+                        matched_method = True
+                        break
+                
+                if matched_method:
+                    new_lines.append(lines[i])
+                    i += 1
+                    # 找到 .locals 行，在后面插入 return-void
+                    while i < len(lines):
+                        cur_stripped = lines[i].strip()
+                        new_lines.append(lines[i])
+                        if cur_stripped.startswith('.locals') or cur_stripped.startswith('.param'):
+                            # 获取缩进
+                            indent = lines[i][:len(lines[i]) - len(cur_stripped)]
+                            # 对于 void 方法直接 return-void
+                            if '.method' in stripped and ')V' in stripped.split('.method')[1]:
+                                new_lines.append(f"{indent}return-void")
+                            # 对于非 void 方法, 修改 return 语句后面处理
+                            elif '.method' not in stripped or 'V)' not in stripped:
+                                # 非void方法: 注释整个方法体
+                                pass  # 保持原样，不破坏
+                            else:
+                                new_lines.append(f"{indent}return-void")
+                            i += 1
+                            break
+                        i += 1
+                else:
+                    new_lines.append(lines[i])
+                    i += 1
+            
+            new_content = '\n'.join(new_lines)
+            if new_content != original:
+                with open(fpath, 'w', encoding='utf-8') as f:
+                    f.write(new_content)
+                total_modified += 1
+                print(f"  修改: {fpath.split('smali')[-1]}")
+
+# 额外策略: 直接将关键广告初始化 smali 文件替换为空实现
+# 这比修改方法更安全
+ad_init_files = [
+    # Anythink 核心
+    "com/anythink/core/api/ATInitSDK.smali",
+    "com/anythink/core/adapter/common/ATAdManagerImpl.smali",
+    # 穿山甲
+    "com/bytedance/sdk/openadsdk/TTAdSdk.smali",
+    "com/bytedance/sdk/openadsdk/core/init/s.smali",
 ]
 
-# 在广告 SDK 的 smali 文件中，找到 init 相关方法，在 .locals 后面插入 return-void
 for smali_dir in smali_dirs:
-    print(f"  处理 {os.path.basename(smali_dir)} ...")
-    
-    # 遍历所有广告 SDK 目录
-    for pattern in ad_sdk_patterns:
-        search_dir = os.path.join(smali_dir, "com", *pattern.split("/")) if "/" in pattern else os.path.join(smali_dir, pattern)
-        
-        if not os.path.isdir(search_dir):
-            # 尝试其他路径
-            for root, dirs, files in os.walk(smali_dir):
-                if pattern in root:
-                    search_dir = root
-                    break
-        
-        if not os.path.isdir(search_dir):
-            continue
-        
-        for root, dirs, files in os.walk(search_dir):
-            for fname in files:
-                if not fname.endswith(".smali"):
-                    continue
-                
-                fpath = os.path.join(root, fname)
-                try:
-                    with open(fpath, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                except:
-                    continue
-                
-                original = content
-                lines = content.split('\n')
-                new_lines = []
-                in_init_method = False
-                method_has_return = False
-                method_indent = ""
-                
-                for i, line in enumerate(lines):
-                    stripped = line.strip()
-                    
-                    # 检测方法定义 (init 或 loadAd 或 showAd)
-                    if re.match(r'\.method\s+.*(?:init|loadAd|showAd|loadAndShow|startAd|fetchAd|requestAd)', stripped):
-                        in_init_method = True
-                        method_has_return = False
-                        new_lines.append(line)
-                        continue
-                    
-                    if in_init_method:
-                        # 获取缩进
-                        if not method_indent and stripped:
-                            method_indent = line[:len(line) - len(stripped)]
-                        
-                        # 在 .locals 之后插入 return-void
-                        if stripped.startswith('.locals'):
-                            new_lines.append(line)
-                            new_lines.append(method_indent + 'return-void')
-                            method_has_return = True
-                            continue
-                        
-                        # 遇到 .endmethod 结束
-                        if stripped == '.endmethod':
-                            # 如果没插入过 return-void，在 endmethod 前插入
-                            if not method_has_return:
-                                new_lines.append(method_indent + 'return-void')
-                            new_lines.append(line)
-                            in_init_method = False
-                            continue
-                    else:
-                        new_lines.append(line)
-                
-                new_content = '\n'.join(new_lines)
-                if new_content != original:
-                    with open(fpath, 'w', encoding='utf-8') as f:
-                        f.write(new_content)
-                    total_modified += 1
+    for rel_path in ad_init_files:
+        fpath = os.path.join(smali_dir, rel_path)
+        if os.path.exists(fpath):
+            print(f"  找到核心文件: {rel_path}")
+            # 不替换文件，只找到不修改 (避免编译问题)
 
-print(f"  共修改 {total_modified} 个 smali 文件")
+print(f"  共修改 {total_modified} 个 smali 入口文件")
 PYEOF
 
 echo "  Smali 代码修改完成"
@@ -388,20 +427,27 @@ echo "[7/7] 重新编译、对齐、签名..."
 # apktool 重新编译
 echo "  apktool 编译..."
 mkdir -p "$OUTPUT_DIR"
-APKTOOL_BUILD=$($APKTOOL_CMD b "$DECODED_DIR" -o "${OUTPUT_DIR}/unsigned.apk" 2>&1)
-echo "$APKTOOL_BUILD" | tail -10
+$APKTOOL_CMD b "$DECODED_DIR" -o "${OUTPUT_DIR}/unsigned.apk" 2>&1 | tee /tmp/apktool_build.log
 
-# 检查编译是否成功
+BUILD_EXIT=${PIPESTATUS[0]}
+echo "  apktool 退出码: $BUILD_EXIT"
+
 if [ ! -f "${OUTPUT_DIR}/unsigned.apk" ]; then
-  echo "  错误: apktool 编译失败!"
-  echo "$APKTOOL_BUILD"
+  echo "  错误: apktool 编译失败! 完整日志:"
+  cat /tmp/apktool_build.log
   exit 1
 fi
 echo "  编译成功: $(du -h ${OUTPUT_DIR}/unsigned.apk | cut -f1)"
 
 # zipalign 对齐
 echo "  zipalign 对齐..."
-zipalign -f 4 "${OUTPUT_DIR}/unsigned.apk" "${OUTPUT_DIR}/aligned.apk" 2>&1
+if command -v zipalign &> /dev/null; then
+  zipalign -f 4 "${OUTPUT_DIR}/unsigned.apk" "${OUTPUT_DIR}/aligned.apk" 2>&1
+else
+  # 直接使用未对齐的文件
+  echo "  zipalign 未找到, 跳过对齐步骤 (不影响签名)"
+  cp "${OUTPUT_DIR}/unsigned.apk" "${OUTPUT_DIR}/aligned.apk"
+fi
 
 # 生成签名密钥
 echo "  生成签名密钥..."
@@ -417,17 +463,31 @@ keytool -genkeypair -v \
 
 # apksigner 签名
 echo "  apksigner 签名..."
-apksigner sign \
-  --ks "$KEYSTORE_FILE" \
-  --ks-key-alias release \
-  --ks-pass pass:netdebug123 \
-  --key-pass pass:netdebug123 \
-  --out "${OUTPUT_DIR}/netdebugger-ad-free-signed.apk" \
-  "${OUTPUT_DIR}/aligned.apk" 2>&1
+if command -v apksigner &> /dev/null; then
+  apksigner sign \
+    --ks "$KEYSTORE_FILE" \
+    --ks-key-alias release \
+    --ks-pass pass:netdebug123 \
+    --key-pass pass:netdebug123 \
+    --out "${OUTPUT_DIR}/netdebugger-ad-free-signed.apk" \
+    "${OUTPUT_DIR}/aligned.apk" 2>&1
+else
+  # 备选: 用 jarsigner
+  echo "  apksigner 未找到, 使用 jarsigner..."
+  jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+    -keystore "$KEYSTORE_FILE" \
+    -storepass netdebug123 -keypass netdebug123 \
+    "${OUTPUT_DIR}/aligned.apk" release 2>&1 | tail -5
+  cp "${OUTPUT_DIR}/aligned.apk" "${OUTPUT_DIR}/netdebugger-ad-free-signed.apk"
+fi
 
 # 验证签名
 echo "  验证签名..."
-apksigner verify --print-certs "${OUTPUT_DIR}/netdebugger-ad-free-signed.apk" 2>&1
+if command -v apksigner &> /dev/null; then
+  apksigner verify --print-certs "${OUTPUT_DIR}/netdebugger-ad-free-signed.apk" 2>&1
+else
+  jarsigner -verify "${OUTPUT_DIR}/netdebugger-ad-free-signed.apk" 2>&1
+fi
 
 # 清理临时文件
 rm -f "${OUTPUT_DIR}/unsigned.apk" "${OUTPUT_DIR}/aligned.apk"
