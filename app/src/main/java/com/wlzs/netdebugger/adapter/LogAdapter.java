@@ -34,24 +34,12 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
     }
 
     private void loadColors() {
-        textColor = resolveColor(R.attr.textColorPrimary, R.color.text_primary);
-        sendColor = resolveColor(R.attr.logSend, R.color.log_send);
-        receiveColor = resolveColor(R.attr.logReceive, R.color.log_receive);
-        errorColor = resolveColor(R.attr.logError, R.color.log_error);
-        infoColor = resolveColor(R.attr.logInfo, R.color.log_info);
-        warnColor = resolveColor(R.attr.logWarn, R.color.log_warn);
-    }
-
-    private int resolveColor(int attr, int fallback) {
-        try {
-            int[] attrs = new int[]{attr};
-            android.util.TypedArray ta = context.obtainStyledAttributes(attrs);
-            int color = ta.getColor(0, context.getResources().getColor(fallback));
-            ta.recycle();
-            return color;
-        } catch (Exception e) {
-            return context.getResources().getColor(fallback);
-        }
+        textColor = context.getResources().getColor(R.color.text_primary);
+        sendColor = context.getResources().getColor(R.color.log_send);
+        receiveColor = context.getResources().getColor(R.color.log_receive);
+        errorColor = context.getResources().getColor(R.color.log_error);
+        infoColor = context.getResources().getColor(R.color.log_info);
+        warnColor = context.getResources().getColor(R.color.log_warn);
     }
 
     @Override

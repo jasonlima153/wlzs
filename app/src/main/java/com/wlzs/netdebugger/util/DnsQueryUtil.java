@@ -50,6 +50,7 @@ public class DnsQueryUtil {
     private static final int TYPE_CNAME = 5;
     private static final int TYPE_MX = 15;
     private static final int TYPE_NS = 2;
+    private static final int TYPE_PTR = 12;
     private static final int TYPE_TXT = 16;
     private static final int TYPE_SOA = 6;
 

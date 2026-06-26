@@ -39,10 +39,10 @@ public class ToolsFragment extends Fragment {
         recycler.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
         List<ToolItem> items = new ArrayList<>();
-        items.add(new ToolItem("Ping", android.R.drawable.ic_menu_share, "网络连通性测试"));
-        items.add(new ToolItem("DNS 查询", android.R.drawable.ic_menu_search, "查询域名DNS记录"));
-        items.add(new ToolItem("端口扫描", android.R.drawable.ic_menu_set_as, "扫描开放端口"));
-        items.add(new ToolItem("Traceroute", android.R.drawable.ic_menu_directions, "路由追踪"));
+        items.add(new ToolItem("Ping", R.drawable.ic_menu_share, "网络连通性测试"));
+        items.add(new ToolItem("DNS 查询", R.drawable.ic_menu_search, "查询域名DNS记录"));
+        items.add(new ToolItem("端口扫描", R.drawable.ic_menu_set_as, "扫描开放端口"));
+        items.add(new ToolItem("Traceroute", R.drawable.ic_menu_directions, "路由追踪"));
 
         ToolGridAdapter adapter = new ToolGridAdapter(requireContext(), items, (item, position) -> {
             Intent intent = null;

@@ -40,11 +40,11 @@ public class CommFragment extends Fragment {
         recycler.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
         List<ToolItem> items = new ArrayList<>();
-        items.add(new ToolItem("TCP 客户端", android.R.drawable.ic_menu_send, "连接远程TCP服务端"));
-        items.add(new ToolItem("TCP 服务端", android.R.drawable.ic_menu_manage, "监听TCP连接"));
-        items.add(new ToolItem("UDP 客户端", android.R.drawable.ic_menu_upload, "发送UDP数据包"));
-        items.add(new ToolItem("UDP 服务端", android.R.drawable.ic_menu_download, "监听UDP数据包"));
-        items.add(new ToolItem("HTTP 抓包", android.R.drawable.ic_menu_view, "发送HTTP请求"));
+        items.add(new ToolItem("TCP 客户端", R.drawable.ic_menu_send, "连接远程TCP服务端"));
+        items.add(new ToolItem("TCP 服务端", R.drawable.ic_menu_manage, "监听TCP连接"));
+        items.add(new ToolItem("UDP 客户端", R.drawable.ic_menu_upload, "发送UDP数据包"));
+        items.add(new ToolItem("UDP 服务端", R.drawable.ic_menu_download, "监听UDP数据包"));
+        items.add(new ToolItem("HTTP 抓包", R.drawable.ic_menu_view, "发送HTTP请求"));
 
         ToolGridAdapter adapter = new ToolGridAdapter(requireContext(), items, (item, position) -> {
             Intent intent = null;
