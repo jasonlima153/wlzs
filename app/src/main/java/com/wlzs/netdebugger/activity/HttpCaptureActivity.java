@@ -6,25 +6,32 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wlzs.netdebugger.R;
 import com.wlzs.netdebugger.model.LogEntry;
+import com.wlzs.netdebugger.util.ConnectionManager;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HttpCaptureActivity extends AppCompatActivity {
+
+    private static final String CONN_TYPE = "http";
 
     private EditText etUrl, etHeaders, etBody;
     private AutoCompleteTextView actvMethod;
@@ -32,6 +39,12 @@ public class HttpCaptureActivity extends AppCompatActivity {
     private TextInputLayout tilBody;
     private LinearLayout llBody;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    // Saved connections
+    private ConnectionManager connManager;
+    private Spinner spinnerSaved;
+    private MaterialButton btnSaveConn, btnDelConn;
+    private ArrayAdapter<ConnectionManager.ConnectionItem> spinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +87,117 @@ public class HttpCaptureActivity extends AppCompatActivity {
         });
 
         btnSend.setOnClickListener(v -> sendRequest());
+
+        initSavedConnections();
     }
+
+    // ======================== Saved Connections ========================
+
+    private void initSavedConnections() {
+        try {
+            connManager = ConnectionManager.getInstance(this);
+            spinnerSaved = findViewById(R.id.spinner_saved);
+            btnSaveConn = findViewById(R.id.btn_save_conn);
+            btnDelConn = findViewById(R.id.btn_del_conn);
+
+            List<ConnectionManager.ConnectionItem> items = connManager.getConnections(CONN_TYPE);
+            spinnerAdapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_item, items);
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerSaved.setAdapter(spinnerAdapter);
+
+            spinnerSaved.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+                    if (position >= 0 && position < spinnerAdapter.getCount()) {
+                        ConnectionManager.ConnectionItem item = spinnerAdapter.getItem(position);
+                        if (item != null) {
+                            etUrl.setText(item.host);
+                        }
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(android.widget.AdapterView<?> parent) {
+                }
+            });
+
+            btnSaveConn.setOnClickListener(v -> showSaveDialog());
+            btnDelConn.setOnClickListener(v -> deleteSelectedConnection());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showSaveDialog() {
+        try {
+            String currentUrl = etUrl.getText() != null ? etUrl.getText().toString().trim() : "";
+            if (currentUrl.isEmpty()) return;
+
+            TextInputEditText etName = new TextInputEditText(this);
+            etName.setHint("配置名称");
+            // Generate a default name from URL
+            try {
+                URL url = new URL(currentUrl);
+                String defaultName = url.getHost() + url.getPath();
+                if (defaultName.length() > 30) defaultName = defaultName.substring(0, 30);
+                etName.setText(defaultName);
+            } catch (Exception e) {
+                etName.setText(currentUrl.length() > 30 ? currentUrl.substring(0, 30) : currentUrl);
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("保存连接配置")
+                    .setView(etName)
+                    .setPositiveButton("保存", (dialog, which) -> {
+                        try {
+                            String name = etName.getText() != null ? etName.getText().toString().trim() : "";
+                            if (name.isEmpty()) name = currentUrl;
+                            ConnectionManager.ConnectionItem item = new ConnectionManager.ConnectionItem();
+                            item.name = name;
+                            item.host = currentUrl;
+                            item.port = "";
+                            item.type = CONN_TYPE;
+                            connManager.addConnection(item);
+                            refreshSpinner();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .setNegativeButton("取消", null)
+                    .show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteSelectedConnection() {
+        try {
+            int position = spinnerSaved.getSelectedItemPosition();
+            if (position >= 0 && position < spinnerAdapter.getCount()) {
+                ConnectionManager.ConnectionItem item = spinnerAdapter.getItem(position);
+                if (item != null) {
+                    connManager.deleteConnection(item.id);
+                    refreshSpinner();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void refreshSpinner() {
+        try {
+            List<ConnectionManager.ConnectionItem> items = connManager.getConnections(CONN_TYPE);
+            spinnerAdapter.clear();
+            spinnerAdapter.addAll(items);
+            spinnerAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ======================== HTTP Logic ========================
 
     private void sendRequest() {
         String urlStr = etUrl.getText().toString().trim();

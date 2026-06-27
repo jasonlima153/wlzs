@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,17 +16,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputEditText;
 import com.wlzs.netdebugger.R;
 import com.wlzs.netdebugger.adapter.LogAdapter;
 import com.wlzs.netdebugger.model.LogEntry;
+import com.wlzs.netdebugger.util.ConnectionManager;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class UdpServerActivity extends AppCompatActivity {
+
+    private static final String CONN_TYPE = "udp_server";
 
     private EditText etPort, etMessage, etTargetIp, etTargetPort;
     private SwitchMaterial switchHex;
@@ -33,6 +41,12 @@ public class UdpServerActivity extends AppCompatActivity {
     private volatile boolean running = false;
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final Handler handler = new Handler(Looper.getMainLooper());
+
+    // Saved connections
+    private ConnectionManager connManager;
+    private Spinner spinnerSaved;
+    private MaterialButton btnSaveConn, btnDelConn;
+    private ArrayAdapter<ConnectionManager.ConnectionItem> spinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +84,109 @@ public class UdpServerActivity extends AppCompatActivity {
         btnStop.setOnClickListener(v -> stopServer());
         btnSend.setOnClickListener(v -> sendReply());
         btnClear.setOnClickListener(v -> logAdapter.clear());
+
+        initSavedConnections();
     }
+
+    // ======================== Saved Connections ========================
+
+    private void initSavedConnections() {
+        try {
+            connManager = ConnectionManager.getInstance(this);
+            spinnerSaved = findViewById(R.id.spinner_saved);
+            btnSaveConn = findViewById(R.id.btn_save_conn);
+            btnDelConn = findViewById(R.id.btn_del_conn);
+
+            List<ConnectionManager.ConnectionItem> items = connManager.getConnections(CONN_TYPE);
+            spinnerAdapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_item, items);
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerSaved.setAdapter(spinnerAdapter);
+
+            spinnerSaved.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+                    if (position >= 0 && position < spinnerAdapter.getCount()) {
+                        ConnectionManager.ConnectionItem item = spinnerAdapter.getItem(position);
+                        if (item != null) {
+                            etPort.setText(item.port);
+                        }
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(android.widget.AdapterView<?> parent) {
+                }
+            });
+
+            btnSaveConn.setOnClickListener(v -> showSaveDialog());
+            btnDelConn.setOnClickListener(v -> deleteSelectedConnection());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showSaveDialog() {
+        try {
+            String currentPort = etPort.getText() != null ? etPort.getText().toString().trim() : "";
+            if (currentPort.isEmpty()) return;
+
+            TextInputEditText etName = new TextInputEditText(this);
+            etName.setHint("配置名称");
+            etName.setText("监听:" + currentPort);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("保存连接配置")
+                    .setView(etName)
+                    .setPositiveButton("保存", (dialog, which) -> {
+                        try {
+                            String name = etName.getText() != null ? etName.getText().toString().trim() : "";
+                            if (name.isEmpty()) name = "监听:" + currentPort;
+                            ConnectionManager.ConnectionItem item = new ConnectionManager.ConnectionItem();
+                            item.name = name;
+                            item.host = "";
+                            item.port = currentPort;
+                            item.type = CONN_TYPE;
+                            connManager.addConnection(item);
+                            refreshSpinner();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .setNegativeButton("取消", null)
+                    .show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteSelectedConnection() {
+        try {
+            int position = spinnerSaved.getSelectedItemPosition();
+            if (position >= 0 && position < spinnerAdapter.getCount()) {
+                ConnectionManager.ConnectionItem item = spinnerAdapter.getItem(position);
+                if (item != null) {
+                    connManager.deleteConnection(item.id);
+                    refreshSpinner();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void refreshSpinner() {
+        try {
+            List<ConnectionManager.ConnectionItem> items = connManager.getConnections(CONN_TYPE);
+            spinnerAdapter.clear();
+            spinnerAdapter.addAll(items);
+            spinnerAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ======================== Server Logic ========================
 
     private void startServer() {
         int port;
