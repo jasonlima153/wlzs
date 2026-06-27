@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="24dp"
-                    android:text="暂无配置，点击上方\"添加\"按钮创建"
+                    android:text="暂无配置，点击上方添加按钮创建"
                     android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_normal" />
 
