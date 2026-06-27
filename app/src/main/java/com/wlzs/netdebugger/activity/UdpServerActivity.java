@@ -39,9 +39,17 @@ public class UdpServerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_udp_server);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("UDP 服务端");
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        try {
+            MaterialToolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                getSupportActionBar().setTitle("UDP 服务端");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                toolbar.setNavigationOnClickListener(v -> onBackPressed());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         etPort = findViewById(R.id.et_port);
         etMessage = findViewById(R.id.et_message);

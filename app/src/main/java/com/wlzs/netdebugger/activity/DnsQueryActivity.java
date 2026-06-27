@@ -32,9 +32,17 @@ public class DnsQueryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dns_query);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("DNS 查询");
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        try {
+            MaterialToolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                getSupportActionBar().setTitle("DNS 查询");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                toolbar.setNavigationOnClickListener(v -> onBackPressed());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         etDomain = findViewById(R.id.et_domain);
         etDnsServer = findViewById(R.id.et_dns_server);

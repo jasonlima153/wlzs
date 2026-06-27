@@ -30,9 +30,17 @@ public class PingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ping);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Ping");
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        try {
+            MaterialToolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                getSupportActionBar().setTitle("Ping");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                toolbar.setNavigationOnClickListener(v -> onBackPressed());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         etHost = findViewById(R.id.et_host);
         etCount = findViewById(R.id.et_count);

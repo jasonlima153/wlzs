@@ -44,9 +44,17 @@ public class TcpServerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tcp_server);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("TCP 服务端");
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        try {
+            MaterialToolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                getSupportActionBar().setTitle("TCP 服务端");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                toolbar.setNavigationOnClickListener(v -> onBackPressed());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         etPort = findViewById(R.id.et_port);
         etMessage = findViewById(R.id.et_message);

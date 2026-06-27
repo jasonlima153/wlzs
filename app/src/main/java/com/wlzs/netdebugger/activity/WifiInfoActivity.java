@@ -19,9 +19,17 @@ public class WifiInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_info);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("WiFi 详情");
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        try {
+            MaterialToolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                getSupportActionBar().setTitle("WiFi 详情");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                toolbar.setNavigationOnClickListener(v -> onBackPressed());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         refreshInfo();
     }
