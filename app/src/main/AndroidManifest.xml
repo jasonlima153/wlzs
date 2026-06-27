@@ -8,7 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"
+        android:maxSdkVersion="32" />
 
     <application
         android:name=".NetDebuggerApp"
@@ -29,18 +30,42 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.PingActivity" />
-        <activity android:name=".activity.DnsQueryActivity" />
-        <activity android:name=".activity.PortScanActivity" />
-        <activity android:name=".activity.TracerouteActivity" />
-        <activity android:name=".activity.TcpClientActivity" />
-        <activity android:name=".activity.TcpServerActivity" />
-        <activity android:name=".activity.UdpClientActivity" />
-        <activity android:name=".activity.UdpServerActivity" />
-        <activity android:name=".activity.HttpCaptureActivity" />
-        <activity android:name=".activity.LanScanActivity" />
-        <activity android:name=".activity.IpLocationActivity" />
-        <activity android:name=".activity.WifiInfoActivity" />
+        <activity
+            android:name=".activity.PingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.DnsQueryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.PortScanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.TracerouteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.TcpClientActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.TcpServerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.UdpClientActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.UdpServerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.HttpCaptureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.LanScanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.IpLocationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.WifiInfoActivity"
+            android:exported="false" />
 
     </application>
 

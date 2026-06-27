@@ -1,50 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/margin_normal">
+        android:background="@color/toolbar_background"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_back"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
 
-        <com.google.android.material.card.MaterialCardView
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_normal"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardElevation="@dimen/card_elevation">
+            android:orientation="vertical"
+            android:padding="@dimen/margin_normal">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_large">
+                android:layout_marginBottom="@dimen/margin_normal"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                app:cardCornerRadius="@dimen/card_corner_radius"
+                app:cardElevation="@dimen/card_elevation">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/home_wifi_info"
-                    android:textSize="@dimen/text_title"
-                    android:textColor="@color/primary"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="@dimen/margin_normal" />
+                    android:orientation="vertical"
+                    android:padding="@dimen/padding_large">
 
-                <TextView android:id="@+id/tv_ssid" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_bssid" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_ip" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_gateway" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_netmask" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_dns" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_mac" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_signal" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
-                <TextView android:id="@+id/tv_frequency" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/home_wifi_info"
+                        android:textSize="@dimen/text_title"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="@dimen/margin_normal" />
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView android:id="@+id/tv_ssid" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_bssid" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_ip" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_gateway" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_netmask" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_dns" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_mac" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_signal" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" android:layout_marginBottom="4dp" />
+                    <TextView android:id="@+id/tv_frequency" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_normal" />
 
-    </LinearLayout>
-</ScrollView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
