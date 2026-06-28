@@ -48,7 +48,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="删除"
             android:padding="8dp"
-            android:src="@android:drawable/ic_menu_delete"
+            android:src="@drawable/ic_back"
             app:tint="@color/error" />
 
     </LinearLayout>

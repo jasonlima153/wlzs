@@ -1,4 +1,4 @@
-package com.wlzs.netdebugger.activity;
+package com.wlzs.netdebugger.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -42,20 +42,16 @@ public class ConnectionConfigAdapter extends RecyclerView.Adapter<ConnectionConf
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConnectionManager.ConnectionItem item = items.get(position);
-        holder.tvName.setText(item.name);
-
-        String detail;
-        if ("http".equals(item.type) || "ping".equals(item.type)) {
-            detail = item.host;
-        } else {
-            detail = item.host + (item.port != null && !item.port.isEmpty() ? ":" + item.port : "");
+        holder.tvName.setText(item.name != null ? item.name : "未命名");
+        String detail = item.host != null ? item.host : "";
+        if (item.port != null && !item.port.isEmpty()) {
+            detail += ":" + item.port;
         }
         holder.tvDetail.setText(detail);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(item, position);
         });
-
         holder.ivDelete.setOnClickListener(v -> {
             if (listener != null) listener.onDeleteClick(item, position);
         });
@@ -71,7 +67,7 @@ public class ConnectionConfigAdapter extends RecyclerView.Adapter<ConnectionConf
         TextView tvDetail;
         ImageView ivDelete;
 
-        ViewHolder(View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tv_config_name);
             tvDetail = itemView.findViewById(R.id.tv_config_detail);

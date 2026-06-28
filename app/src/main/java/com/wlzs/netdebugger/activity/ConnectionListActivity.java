@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.wlzs.netdebugger.R;
 import com.wlzs.netdebugger.adapter.ConnectionConfigAdapter;
 import com.wlzs.netdebugger.util.ConnectionManager;
@@ -117,50 +117,40 @@ public class ConnectionListActivity extends AppCompatActivity {
         container.setPadding(48, 24, 48, 0);
 
         // Config name
-        TextInputLayout tilName = new TextInputLayout(this);
-        tilName.setHint("配置名称");
-        tilName.setBoxStyle(TextInputLayout.BOX_STYLE_OUTLINED);
-        TextInputEditText etName = new TextInputEditText(tilName);
-        tilName.addView(etName);
-        container.addView(tilName);
+        EditText etName = new EditText(this);
+        etName.setHint("配置名称（可选）");
+        container.addView(etName);
 
         // Host / URL
         String hostLabel;
         if ("ping".equals(toolType)) {
-            hostLabel = "目标地址";
+            hostLabel = "目标地址（如 8.8.8.8）";
         } else if ("http".equals(toolType)) {
-            hostLabel = "URL";
+            hostLabel = "URL（如 http://example.com）";
         } else {
-            hostLabel = "目标地址";
+            hostLabel = "目标地址（如 192.168.1.1）";
         }
 
-        TextInputLayout tilHost = new TextInputLayout(this);
-        tilHost.setHint(hostLabel);
-        tilHost.setBoxStyle(TextInputLayout.BOX_STYLE_OUTLINED);
-        TextInputEditText etHost = new TextInputEditText(tilHost);
+        EditText etHost = new EditText(this);
+        etHost.setHint(hostLabel);
         etHost.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
-        tilHost.addView(etHost);
         LinearLayout.LayoutParams lpHost = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lpHost.topMargin = 12;
-        tilHost.setLayoutParams(lpHost);
-        container.addView(tilHost);
+        lpHost.topMargin = 24;
+        etHost.setLayoutParams(lpHost);
+        container.addView(etHost);
 
         // Port (not for ping/http)
-        TextInputLayout tilPort = null;
-        TextInputEditText etPort = null;
+        EditText etPort = null;
         if (!"ping".equals(toolType) && !"http".equals(toolType)) {
-            tilPort = new TextInputLayout(this);
-            tilPort.setHint("端口号");
-            tilPort.setBoxStyle(TextInputLayout.BOX_STYLE_OUTLINED);
-            etPort = new TextInputEditText(tilPort);
+            etPort = new EditText(this);
+            etPort.setHint("端口号");
             etPort.setInputType(InputType.TYPE_CLASS_NUMBER);
-            tilPort.addView(etPort);
             LinearLayout.LayoutParams lpPort = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lpPort.topMargin = 12;
-            tilPort.setLayoutParams(lpPort);
-            container.addView(tilPort);
+            lpPort.topMargin = 24;
+            etPort.setLayoutParams(lpPort);
+            container.addView(etPort);
         }
 
         builder.setView(container);
@@ -171,17 +161,16 @@ public class ConnectionListActivity extends AppCompatActivity {
                 String host = etHost.getText() != null ? etHost.getText().toString().trim() : "";
                 String port = etPort != null && etPort.getText() != null ? etPort.getText().toString().trim() : "";
 
+                if (host.isEmpty()) {
+                    Toast.makeText(ConnectionListActivity.this, "请输入地址", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (name.isEmpty()) {
                     if ("ping".equals(toolType)) {
                         name = "Ping " + host;
                     } else if ("http".equals(toolType)) {
-                        try {
-                            java.net.URL url = new java.net.URL(host);
-                            name = url.getHost() + url.getPath();
-                            if (name.length() > 30) name = name.substring(0, 30);
-                        } catch (Exception e) {
-                            name = host.length() > 30 ? host.substring(0, 30) : host;
-                        }
+                        name = host.length() > 30 ? host.substring(0, 30) : host;
                     } else {
                         name = host + ":" + port;
                     }
@@ -194,6 +183,7 @@ public class ConnectionListActivity extends AppCompatActivity {
                 item.type = toolType;
                 connManager.addConnection(item);
                 loadConfigs();
+                Toast.makeText(ConnectionListActivity.this, "已保存", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
