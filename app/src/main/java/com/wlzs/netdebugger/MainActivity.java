@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        RecyclerView recyclerTools = findViewById(R.id.recyclerTools);
+        RecyclerView recyclerTools = findViewById(R.id.recycler_tools);
         recyclerTools.setLayoutManager(new GridLayoutManager(this, 2));
 
         List<ToolItem> tools = createToolList();
@@ -46,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
 
     private List<ToolItem> createToolList() {
         List<ToolItem> list = new ArrayList<>();
-        list.add(new ToolItem("Ping", android.R.drawable.ic_menu_compass, "测试网络连通性"));
-        list.add(new ToolItem("TCP 客户端", android.R.drawable.ic_menu_call, "连接远程TCP服务端"));
-        list.add(new ToolItem("TCP 服务端", android.R.drawable.ic_menu_day, "监听端口等待连接"));
-        list.add(new ToolItem("UDP 客户端", android.R.drawable.ic_menu_send, "发送UDP数据报"));
-        list.add(new ToolItem("UDP 服务端", android.R.drawable.ic_menu_recent_history, "监听UDP数据报"));
-        list.add(new ToolItem("HTTP 抓包", android.R.drawable.ic_menu_view, "发送HTTP请求查看响应"));
+        list.add(new ToolItem("Ping", R.drawable.ic_ping, "测试网络连通性"));
+        list.add(new ToolItem("TCP 客户端", R.drawable.ic_menu_send, "连接远程TCP服务端"));
+        list.add(new ToolItem("TCP 服务端", R.drawable.ic_menu_manage, "监听端口等待连接"));
+        list.add(new ToolItem("UDP 客户端", R.drawable.ic_menu_upload, "发送UDP数据报"));
+        list.add(new ToolItem("UDP 服务端", R.drawable.ic_menu_download, "监听UDP数据报"));
+        list.add(new ToolItem("HTTP 抓包", R.drawable.ic_menu_view, "发送HTTP请求查看响应"));
         return list;
     }
 
