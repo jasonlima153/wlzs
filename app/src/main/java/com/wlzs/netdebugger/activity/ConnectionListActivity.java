@@ -141,9 +141,9 @@ public class ConnectionListActivity extends AppCompatActivity {
         container.addView(etHost);
 
         // Port (not for ping/http)
-        EditText etPort = null;
+        final EditText[] portHolder = new EditText[1];
         if (!"ping".equals(toolType) && !"http".equals(toolType)) {
-            etPort = new EditText(this);
+            EditText etPort = new EditText(this);
             etPort.setHint("端口号");
             etPort.setInputType(InputType.TYPE_CLASS_NUMBER);
             LinearLayout.LayoutParams lpPort = new LinearLayout.LayoutParams(
@@ -151,6 +151,7 @@ public class ConnectionListActivity extends AppCompatActivity {
             lpPort.topMargin = 24;
             etPort.setLayoutParams(lpPort);
             container.addView(etPort);
+            portHolder[0] = etPort;
         }
 
         builder.setView(container);
@@ -159,7 +160,7 @@ public class ConnectionListActivity extends AppCompatActivity {
             try {
                 String name = etName.getText() != null ? etName.getText().toString().trim() : "";
                 String host = etHost.getText() != null ? etHost.getText().toString().trim() : "";
-                String port = etPort != null && etPort.getText() != null ? etPort.getText().toString().trim() : "";
+                String port = portHolder[0] != null && portHolder[0].getText() != null ? portHolder[0].getText().toString().trim() : "";
 
                 if (host.isEmpty()) {
                     Toast.makeText(ConnectionListActivity.this, "请输入地址", Toast.LENGTH_SHORT).show();
