@@ -207,13 +207,30 @@
 
                 </LinearLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_send"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:text="@string/btn_send"
-                    android:enabled="false" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/margin_small">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_send"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:text="@string/btn_send"
+                        android:enabled="false" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_clear"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:text="@string/btn_clear" />
+
+                </LinearLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

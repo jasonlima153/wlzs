@@ -82,6 +82,12 @@ public class TcpServerActivity extends AppCompatActivity {
         logAdapter = new LogAdapter(this);
         recyclerLog.setAdapter(logAdapter);
 
+        // Auto-fill from Intent extras
+        String port = getIntent().getStringExtra("conn_port");
+        if (port != null && !port.isEmpty() && etPort != null) {
+            etPort.setText(port);
+        }
+
         btnListen.setOnClickListener(v -> startListening());
         btnStop.setOnClickListener(v -> stopListening());
         btnSend.setOnClickListener(v -> sendMessage());

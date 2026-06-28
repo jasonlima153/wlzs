@@ -54,6 +54,12 @@ public class PingActivity extends AppCompatActivity {
         logAdapter = new LogAdapter(this);
         recyclerLog.setAdapter(logAdapter);
 
+        // Auto-fill from Intent extras
+        String host = getIntent().getStringExtra("conn_host");
+        if (host != null && !host.isEmpty() && etHost != null) {
+            etHost.setText(host);
+        }
+
         btnStart.setOnClickListener(v -> startPing());
         btnStop.setOnClickListener(v -> stopPing());
 

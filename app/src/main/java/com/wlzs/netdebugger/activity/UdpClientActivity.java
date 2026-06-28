@@ -76,6 +76,16 @@ public class UdpClientActivity extends AppCompatActivity {
         logAdapter = new LogAdapter(this);
         recyclerLog.setAdapter(logAdapter);
 
+        // Auto-fill from Intent extras
+        String host = getIntent().getStringExtra("conn_host");
+        String port = getIntent().getStringExtra("conn_port");
+        if (host != null && !host.isEmpty() && etHost != null) {
+            etHost.setText(host);
+        }
+        if (port != null && !port.isEmpty() && etPort != null) {
+            etPort.setText(port);
+        }
+
         btnSend.setOnClickListener(v -> sendMessage());
         btnClear.setOnClickListener(v -> logAdapter.clear());
 

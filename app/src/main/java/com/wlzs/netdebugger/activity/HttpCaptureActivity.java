@@ -86,6 +86,12 @@ public class HttpCaptureActivity extends AppCompatActivity {
             }
         });
 
+        // Auto-fill from Intent extras
+        String host = getIntent().getStringExtra("conn_host");
+        if (host != null && !host.isEmpty() && etUrl != null) {
+            etUrl.setText(host);
+        }
+
         btnSend.setOnClickListener(v -> sendRequest());
 
         initSavedConnections();

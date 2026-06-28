@@ -83,6 +83,16 @@ public class TcpClientActivity extends AppCompatActivity {
         logAdapter = new LogAdapter(this);
         recyclerLog.setAdapter(logAdapter);
 
+        // Auto-fill from Intent extras
+        String host = getIntent().getStringExtra("conn_host");
+        String port = getIntent().getStringExtra("conn_port");
+        if (host != null && !host.isEmpty() && etHost != null) {
+            etHost.setText(host);
+        }
+        if (port != null && !port.isEmpty() && etPort != null) {
+            etPort.setText(port);
+        }
+
         btnConnect.setOnClickListener(v -> connect());
         btnDisconnect.setOnClickListener(v -> disconnect());
         btnSend.setOnClickListener(v -> sendMessage());

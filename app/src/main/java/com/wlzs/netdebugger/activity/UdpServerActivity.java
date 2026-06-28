@@ -80,10 +80,16 @@ public class UdpServerActivity extends AppCompatActivity {
         logAdapter = new LogAdapter(this);
         recyclerLog.setAdapter(logAdapter);
 
-        btnStart.setOnClickListener(v -> startServer());
-        btnStop.setOnClickListener(v -> stopServer());
-        btnSend.setOnClickListener(v -> sendReply());
-        btnClear.setOnClickListener(v -> logAdapter.clear());
+        // Auto-fill from Intent extras
+        String port = getIntent().getStringExtra("conn_port");
+        if (port != null && !port.isEmpty() && etPort != null) {
+            etPort.setText(port);
+        }
+
+        if (btnStart != null) btnStart.setOnClickListener(v -> startServer());
+        if (btnStop != null) btnStop.setOnClickListener(v -> stopServer());
+        if (btnSend != null) btnSend.setOnClickListener(v -> sendReply());
+        if (btnClear != null) btnClear.setOnClickListener(v -> logAdapter.clear());
 
         initSavedConnections();
     }
@@ -289,9 +295,9 @@ public class UdpServerActivity extends AppCompatActivity {
         running = false;
         if (socket != null) socket.close();
         logAdapter.addEntry(new LogEntry(LogEntry.TYPE_INFO, "UDP 服务端已停止"));
-        btnStart.setEnabled(true);
-        btnStop.setEnabled(false);
-        btnSend.setEnabled(false);
+        if (btnStart != null) btnStart.setEnabled(true);
+        if (btnStop != null) btnStop.setEnabled(false);
+        if (btnSend != null) btnSend.setEnabled(false);
     }
 
     private byte[] hexStringToBytes(String hex) {
@@ -310,7 +316,11 @@ public class UdpServerActivity extends AppCompatActivity {
 
     private void autoScrollLog() {
         RecyclerView recycler = findViewById(R.id.recycler_log);
-        recycler.post(() -> recycler.smoothScrollToPosition(logAdapter.getItemCount() - 1));
+        if (recycler != null) {
+            recycler.post(() -> {
+                if (logAdapter != null) recycler.smoothScrollToPosition(logAdapter.getItemCount() - 1);
+            });
+        }
     }
 
     @Override
