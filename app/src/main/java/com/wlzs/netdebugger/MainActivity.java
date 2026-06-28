@@ -46,24 +46,22 @@ public class MainActivity extends AppCompatActivity {
 
     private List<ToolItem> createToolList() {
         List<ToolItem> list = new ArrayList<>();
-        list.add(new ToolItem("Ping", R.drawable.ic_ping, "测试网络连通性"));
         list.add(new ToolItem("TCP 客户端", R.drawable.ic_menu_send, "连接远程TCP服务端"));
         list.add(new ToolItem("TCP 服务端", R.drawable.ic_menu_manage, "监听端口等待连接"));
         list.add(new ToolItem("UDP 客户端", R.drawable.ic_menu_upload, "发送UDP数据报"));
         list.add(new ToolItem("UDP 服务端", R.drawable.ic_menu_download, "监听UDP数据报"));
-        list.add(new ToolItem("HTTP 抓包", R.drawable.ic_menu_view, "发送HTTP请求查看响应"));
+        list.add(new ToolItem("Ping", R.drawable.ic_ping, "测试网络连通性"));
         return list;
     }
 
     private String getToolType(int position) {
         switch (position) {
-            case 0: return "ping";
-            case 1: return "tcp_client";
-            case 2: return "tcp_server";
-            case 3: return "udp_client";
-            case 4: return "udp_server";
-            case 5: return "http";
-            default: return "ping";
+            case 0: return "tcp_client";
+            case 1: return "tcp_server";
+            case 2: return "udp_client";
+            case 3: return "udp_server";
+            case 4: return "ping";
+            default: return "tcp_client";
         }
     }
 

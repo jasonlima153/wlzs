@@ -27,7 +27,7 @@ public class ConnectionListActivity extends AppCompatActivity {
     public static final String EXTRA_TOOL_NAME = "tool_name";
 
     private static final String[] TOOL_TYPES = {
-            "ping", "tcp_client", "tcp_server", "udp_client", "udp_server", "http"
+            "tcp_client", "tcp_server", "udp_client", "udp_server", "ping"
     };
 
     private String toolType;
@@ -125,8 +125,6 @@ public class ConnectionListActivity extends AppCompatActivity {
         String hostLabel;
         if ("ping".equals(toolType)) {
             hostLabel = "目标地址（如 8.8.8.8）";
-        } else if ("http".equals(toolType)) {
-            hostLabel = "URL（如 http://example.com）";
         } else {
             hostLabel = "目标地址（如 192.168.1.1）";
         }
@@ -140,9 +138,9 @@ public class ConnectionListActivity extends AppCompatActivity {
         etHost.setLayoutParams(lpHost);
         container.addView(etHost);
 
-        // Port (not for ping/http)
+        // Port (not for ping)
         final EditText[] portHolder = new EditText[1];
-        if (!"ping".equals(toolType) && !"http".equals(toolType)) {
+        if (!"ping".equals(toolType)) {
             EditText etPort = new EditText(this);
             etPort.setHint("端口号");
             etPort.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -170,8 +168,6 @@ public class ConnectionListActivity extends AppCompatActivity {
                 if (name.isEmpty()) {
                     if ("ping".equals(toolType)) {
                         name = "Ping " + host;
-                    } else if ("http".equals(toolType)) {
-                        name = host.length() > 30 ? host.substring(0, 30) : host;
                     } else {
                         name = host + ":" + port;
                     }
@@ -210,10 +206,6 @@ public class ConnectionListActivity extends AppCompatActivity {
         Intent intent = null;
 
         switch (toolType) {
-            case "ping":
-                intent = new Intent(this, PingActivity.class);
-                intent.putExtra("conn_host", item.host);
-                break;
             case "tcp_client":
                 intent = new Intent(this, TcpClientActivity.class);
                 intent.putExtra("conn_host", item.host);
@@ -232,8 +224,8 @@ public class ConnectionListActivity extends AppCompatActivity {
                 intent = new Intent(this, UdpServerActivity.class);
                 intent.putExtra("conn_port", item.port);
                 break;
-            case "http":
-                intent = new Intent(this, HttpCaptureActivity.class);
+            case "ping":
+                intent = new Intent(this, PingActivity.class);
                 intent.putExtra("conn_host", item.host);
                 break;
         }
